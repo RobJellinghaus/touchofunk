@@ -8,7 +8,7 @@
 Touchofunk.sln: modified
 GeneratedProjects\UWP\Assembly-CSharp\project.json: 4FCF72A4D5EDB37E24C206A7BCFE7AF1
 GeneratedProjects\UWP\Assembly-CSharp-firstpass\project.json: 4FCF72A4D5EDB37E24C206A7BCFE7AF1
-Touchofunk\App.cs: 03B18C7F2980F6B2715B1F617B2193C6
+Touchofunk\App.cs: modified
 Touchofunk\Package.appxmanifest: 0178B95FFCC9C71F5E5B0ECBD487BB15
 Touchofunk\project.json: 1D02BC64BAC0D041019673A1C4C51737
 Touchofunk\Touchofunk.csproj: DFF4C2DA37F0387915DA4494FC0DA853

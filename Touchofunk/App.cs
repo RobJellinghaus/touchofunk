@@ -64,6 +64,8 @@ namespace Touchofunk
 
 			m_AppCallbacks.SetCoreWindowEvents(coreWindow);
 			m_AppCallbacks.InitializeD3DWindow();
+
+            m_AppCallbacks.SetCursor(new CoreCursor(CoreCursorType.Hand, (uint)0));
 		}
 
 		public void Load(string entryPoint)
