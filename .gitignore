@@ -1,4 +1,8 @@
 .vs/
+GeneratedProjects/UWP/Assembly-CSharp/bin/
+GeneratedProjects/UWP/Assembly-CSharp/obj/
+GeneratedProjects/UWP/Assembly-CSharp-firstpass/bin/
+GeneratedProjects/UWP/Assembly-CSharp-firstpass/obj/
 Touchofunk/bin/
 Touchofunk/obj/
 *.opensdf
