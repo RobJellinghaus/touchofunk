@@ -1,0 +1,7 @@
+.vs/
+Touchofunk/bin/
+Touchofunk/obj/
+*.opensdf
+*.sdf
+*.db
+*.suo
