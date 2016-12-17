@@ -1,8 +1,14 @@
 .vs/
-GeneratedProjects/UWP/Assembly-CSharp/bin/
-GeneratedProjects/UWP/Assembly-CSharp/obj/
-GeneratedProjects/UWP/Assembly-CSharp-firstpass/bin/
-GeneratedProjects/UWP/Assembly-CSharp-firstpass/obj/
+GeneratedProjects/UWP/Assembly-CSharp/bin/x64/Debug/
+GeneratedProjects/UWP/Assembly-CSharp/obj/x64/Debug
+GeneratedProjects/UWP/Assembly-CSharp/bin/ARM/Debug/
+GeneratedProjects/UWP/Assembly-CSharp/obj/ARM/Debug
+GeneratedProjects/UWP/Assembly-CSharp-firstpass/bin/x64/Debug/
+GeneratedProjects/UWP/Assembly-CSharp-firstpass/obj/x64/Debug/
+GeneratedProjects/UWP/Assembly-CSharp-firstpass/bin/ARM/Debug/
+GeneratedProjects/UWP/Assembly-CSharp-firstpass/obj/ARM/Debug/
+Touchofunk Unity/TouchofunkUnity/Library/metadata/
+Touchofunk Unity/TouchofunkUnity/Library/ShaderCache/
 Touchofunk/bin/
 Touchofunk/obj/
 *.opensdf

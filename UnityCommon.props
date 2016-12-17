@@ -5,6 +5,6 @@
         <UnityWSASolutionDir>C:\Git\touchofunk\</UnityWSASolutionDir>
         <UnityWSAPlayerDir>C:\Unity\Editor\Data\PlaybackEngines\MetroSupport\</UnityWSAPlayerDir>
         <UnityWSAToolsDir>$(UnityWSASolutionDir)Unity\Tools\</UnityWSAToolsDir>
-        <UnityProjectDir>C:\Users\Public\Documents\Unity Projects\Touchofunk Unity\Touchofunk\</UnityProjectDir>
+        <UnityProjectDir>C:\Git\touchofunk\Touchofunk Unity\TouchofunkUnity\</UnityProjectDir>
     </PropertyGroup>
 </Project>

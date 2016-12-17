@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/Touchofunk Unity.unity
+  isLoaded: 1
+  isActive: 1

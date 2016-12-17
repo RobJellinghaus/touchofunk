@@ -32,13 +32,14 @@ namespace Touchofunk
 			m_AppCallbacks.SetBridge(m_Bridge);
 
 			m_AppCallbacks.SetCoreApplicationViewEvents(applicationView);
-		}
+            m_AppCallbacks.SetCursor(new CoreCursor(CoreCursorType.Hand, (uint)0));
+        }
 
-		/// <summary>
-		/// This is where apps can hook up any additional setup they need to do before Unity intializes.
-		/// </summary>
-		/// <param name="appCallbacks"></param>
-		virtual protected void AddAppCallbacks(AppCallbacks appCallbacks)
+        /// <summary>
+        /// This is where apps can hook up any additional setup they need to do before Unity intializes.
+        /// </summary>
+        /// <param name="appCallbacks"></param>
+        virtual protected void AddAppCallbacks(AppCallbacks appCallbacks)
 		{
 		}
 
@@ -50,9 +51,9 @@ namespace Touchofunk
 		private void ApplicationView_Activated(CoreApplicationView sender, IActivatedEventArgs args)
 		{
 			CoreWindow.GetForCurrentThread().Activate();
-		}
+        }
 
-		public void SetWindow(CoreWindow coreWindow)
+        public void SetWindow(CoreWindow coreWindow)
 		{
 			ApplicationView.GetForCurrentView().SuppressSystemOverlays = true;
 			if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
@@ -64,20 +65,22 @@ namespace Touchofunk
 
 			m_AppCallbacks.SetCoreWindowEvents(coreWindow);
 			m_AppCallbacks.InitializeD3DWindow();
-
-            m_AppCallbacks.SetCursor(new CoreCursor(CoreCursorType.Hand, (uint)0));
 		}
 
 		public void Load(string entryPoint)
 		{
-		}
+            int foo = 0;
+            foo++;
 
-		public void Run()
+            m_AppCallbacks.SetCursor(new CoreCursor(CoreCursorType.Hand, (uint)0));
+        }
+
+        public void Run()
 		{
-			m_AppCallbacks.Run();
-		}
+            m_AppCallbacks.Run();
+        }
 
-		public void Uninitialize()
+        public void Uninitialize()
 		{
 		}
 

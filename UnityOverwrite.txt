@@ -9,7 +9,7 @@ Touchofunk.sln: modified
 GeneratedProjects\UWP\Assembly-CSharp\project.json: 4FCF72A4D5EDB37E24C206A7BCFE7AF1
 GeneratedProjects\UWP\Assembly-CSharp-firstpass\project.json: 4FCF72A4D5EDB37E24C206A7BCFE7AF1
 Touchofunk\App.cs: modified
-Touchofunk\Package.appxmanifest: 0178B95FFCC9C71F5E5B0ECBD487BB15
+Touchofunk\Package.appxmanifest: 18662E584826206170CA5B41452FFC8E
 Touchofunk\project.json: 1D02BC64BAC0D041019673A1C4C51737
 Touchofunk\Touchofunk.csproj: DFF4C2DA37F0387915DA4494FC0DA853
 Touchofunk\Touchofunk.csproj.user: modified
@@ -28,3 +28,18 @@ Touchofunk\bin\x64\Debug\AppX\Assets\Wide310x150Logo.scale-200.png: C96846A80DF6
 Touchofunk\bin\x64\Debug\AppX\Properties\Default.rd.xml: 72EB282657164E79A1C42F6240984826
 Touchofunk\Properties\AssemblyInfo.cs: 7F2B5EF7EC0ACCAF3D8D109DCA9BE00D
 Touchofunk\Properties\Default.rd.xml: 72EB282657164E79A1C42F6240984826
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\App.cs: modified
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\Package.appxmanifest: 18662E584826206170CA5B41452FFC8E
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\project.json: 1D02BC64BAC0D041019673A1C4C51737
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\Touchofunk.csproj: DFF4C2DA37F0387915DA4494FC0DA853
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\Touchofunk.csproj.user: BEFB8AC4886C4CFDD3C68445D6F19B04
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\Touchofunk.sln: 7510109C6873CDC31F8CACF08BC82C25
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\Assets\SplashScreen.scale-200.png: 60618416282ED104FD1473935716045D
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\Assets\Square150x150Logo.scale-200.png: E02834B4A5DFB97FF8E212C1CACBB084
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\Assets\Square44x44Logo.scale-200.png: 6C6EF27184ABE9D870A9D564953775DE
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\Assets\Square44x44Logo.targetsize-24_altform-unplated.png: 156637F7B5363E983E7A46D8E533A23D
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\Assets\StoreLogo.png: 90BD194CA4A7CFFF3E8B8222229857FB
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\Assets\Wide310x150Logo.scale-200.png: C96846A80DF667F87355569CD816192D
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\Properties\AssemblyInfo.cs: modified
+Touchofunk Unity\TouchofunkUnity\Temp\StagingArea\Properties\Default.rd.xml: 72EB282657164E79A1C42F6240984826
+Touchofunk Unity\TouchofunkUnity\UWP\project.json: 4FCF72A4D5EDB37E24C206A7BCFE7AF1
