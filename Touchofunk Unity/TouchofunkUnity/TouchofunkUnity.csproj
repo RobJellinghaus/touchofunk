@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\AudioGraphHandler.cs" />
+    <Compile Include="Assets\DebugUtil.cs" />
     <Compile Include="Assets\InputHandler.cs" />
     <Compile Include="Assets\Rotator.cs" />
   </ItemGroup>

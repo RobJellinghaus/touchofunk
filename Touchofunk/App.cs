@@ -13,6 +13,8 @@ namespace Touchofunk
 		private WinRTBridge.WinRTBridge m_Bridge;
 		private AppCallbacks m_AppCallbacks;
 
+        private AudioGraphImpl _audioGraphImpl;
+
 		public App()
 		{
 			SetupOrientation();
@@ -22,7 +24,7 @@ namespace Touchofunk
 			AddAppCallbacks(m_AppCallbacks);
 		}
 
-		public virtual void Initialize(CoreApplicationView applicationView)
+		public virtual async void Initialize(CoreApplicationView applicationView)
 		{
 			applicationView.Activated += ApplicationView_Activated;
 			CoreApplication.Suspending += CoreApplication_Suspending;
@@ -32,6 +34,9 @@ namespace Touchofunk
 			m_AppCallbacks.SetBridge(m_Bridge);
 
 			m_AppCallbacks.SetCoreApplicationViewEvents(applicationView);
+
+            _audioGraphImpl = new AudioGraphImpl();
+            await _audioGraphImpl.InitializeAsync();
         }
 
         /// <summary>
@@ -68,14 +73,9 @@ namespace Touchofunk
 
 		public void Load(string entryPoint)
 		{
-            int foo = 0;
-            foo++;
-
             // TODO: where can this go so it actually works?????
             // this makes it be a hand until the Unity banner finishes, but then it reverts to arrow.  :-(
             m_AppCallbacks.SetCursor(new CoreCursor(CoreCursorType.Hand, (uint)0));
-
-            // TODO: let's try initializing the audio graph here
         }
 
         public void Run()
