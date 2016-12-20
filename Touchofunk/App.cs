@@ -32,7 +32,6 @@ namespace Touchofunk
 			m_AppCallbacks.SetBridge(m_Bridge);
 
 			m_AppCallbacks.SetCoreApplicationViewEvents(applicationView);
-            m_AppCallbacks.SetCursor(new CoreCursor(CoreCursorType.Hand, (uint)0));
         }
 
         /// <summary>
@@ -72,7 +71,11 @@ namespace Touchofunk
             int foo = 0;
             foo++;
 
+            // TODO: where can this go so it actually works?????
+            // this makes it be a hand until the Unity banner finishes, but then it reverts to arrow.  :-(
             m_AppCallbacks.SetCursor(new CoreCursor(CoreCursorType.Hand, (uint)0));
+
+            // TODO: let's try initializing the audio graph here
         }
 
         public void Run()
