@@ -2,9 +2,9 @@
     <PropertyGroup>
         <UnityInstallationDir>C:\Unity\Editor\</UnityInstallationDir>
         <UnityWSASolutionName>Touchofunk</UnityWSASolutionName>
-        <UnityWSASolutionDir>C:\Git\touchofunk\</UnityWSASolutionDir>
+        <UnityWSASolutionDir>C:\Git\Touchofunk\</UnityWSASolutionDir>
         <UnityWSAPlayerDir>C:\Unity\Editor\Data\PlaybackEngines\MetroSupport\</UnityWSAPlayerDir>
         <UnityWSAToolsDir>$(UnityWSASolutionDir)Unity\Tools\</UnityWSAToolsDir>
-        <UnityProjectDir>C:\Git\touchofunk\Touchofunk Unity\TouchofunkUnity\</UnityProjectDir>
+        <UnityProjectDir>C:\Git\Touchofunk\Touchofunk Unity\TouchofunkUnity\</UnityProjectDir>
     </PropertyGroup>
 </Project>
