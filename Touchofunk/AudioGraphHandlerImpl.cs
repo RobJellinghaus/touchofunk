@@ -18,24 +18,21 @@ namespace Touchofunk
         public async Task InitializeAsync()
         {
             AudioGraphSettings settings = new AudioGraphSettings(AudioRenderCategory.Media);
+            settings.QuantumSizeSelectionMode = QuantumSizeSelectionMode.LowestLatency;
+
             CreateAudioGraphResult result = await AudioGraph.CreateAsync(settings);
 
-            if (result.Status != AudioGraphCreationStatus.Success)
-            {
-                // Can't create the graph
-                throw new System.Exception("Failed to create audio graph");
-            }
+            DebugUtil.Assert(result.Status == AudioGraphCreationStatus.Success, "Failed to create audio graph");
 
             _audioGraph = result.Graph;
+
+            int latencyInSamples = _audioGraph.LatencyInSamples;
 
             // Create a device output node
             CreateAudioDeviceOutputNodeResult deviceOutputNodeResult = _audioGraph.CreateDeviceOutputNodeAsync().GetResults();
 
-            if (deviceOutputNodeResult.Status != AudioDeviceNodeCreationStatus.Success)
-            {
-                // Cannot create device output node
-                throw new System.Exception(String.Format("Audio Device Output unavailable because {0}", deviceOutputNodeResult.Status.ToString()));
-            }
+            DebugUtil.Assert(deviceOutputNodeResult.Status == AudioDeviceNodeCreationStatus.Success,
+                $"Audio Device Output unavailable because {deviceOutputNodeResult.Status}");
 
             _deviceOutputNode = deviceOutputNodeResult.DeviceOutputNode;
 
