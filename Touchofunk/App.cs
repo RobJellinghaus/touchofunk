@@ -17,6 +17,8 @@ namespace Touchofunk
 
 		public App()
 		{
+            DebugUtil.CheckMainThread();
+
 			SetupOrientation();
 			m_AppCallbacks = new AppCallbacks();
 
@@ -26,6 +28,8 @@ namespace Touchofunk
 
 		public virtual async void Initialize(CoreApplicationView applicationView)
 		{
+            DebugUtil.CheckAppThread();
+
 			applicationView.Activated += ApplicationView_Activated;
 			CoreApplication.Suspending += CoreApplication_Suspending;
 

@@ -1,15 +1,34 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Windows.Media;
 using Windows.Media.Audio;
+using Windows.Media.Capture;
+using Windows.Media.MediaProperties;
 using Windows.Media.Render;
 
 namespace Touchofunk
 {
     internal class AudioGraphImpl : IAudioGraph
     {
+        /// <summary>
+        /// The audio graph itself.
+        /// </summary>
         private AudioGraph _audioGraph;
+
+        /// <summary>
+        /// The default audio output device (the only one currently supported).
+        /// </summary>
         private AudioDeviceOutputNode _deviceOutputNode;
-        private AudioSubmixNode _submixNode;
+
+        /// <summary>
+        /// The default audio input device (the only one currently supported).
+        /// </summary>
+        private AudioDeviceInputNode _deviceInputNode;
+
+        /// <summary>
+        /// The submix node which listens to and copies out incoming audio data.
+        /// </summary>
+        private AudioSubmixNode _inputCaptureSubmixNode;
 
         public AudioGraphImpl()
         {
@@ -17,7 +36,10 @@ namespace Touchofunk
 
         public async Task InitializeAsync()
         {
+            DebugUtil.CheckAppThread();
+
             AudioGraphSettings settings = new AudioGraphSettings(AudioRenderCategory.Media);
+            // settings.DesiredRenderDeviceAudioProcessing = AudioProcessing.Raw;
             settings.QuantumSizeSelectionMode = QuantumSizeSelectionMode.LowestLatency;
 
             CreateAudioGraphResult result = await AudioGraph.CreateAsync(settings);
@@ -36,8 +58,16 @@ namespace Touchofunk
 
             _deviceOutputNode = deviceOutputNodeResult.DeviceOutputNode;
 
-            _submixNode = _audioGraph.CreateSubmixNode();
-            _submixNode.AddOutgoingConnection(_deviceOutputNode);
+            _inputCaptureSubmixNode = _audioGraph.CreateSubmixNode();                                                            // Create a device input node using the default audio input device
+
+            CreateAudioDeviceInputNodeResult deviceInputNodeResult = await _audioGraph.CreateDeviceInputNodeAsync(MediaCategory.Other);
+
+            DebugUtil.Assert(deviceInputNodeResult.Status == AudioDeviceNodeCreationStatus.Success,
+                $"Audio Device Input unavailable because {deviceInputNodeResult.Status}");
+
+            _deviceInputNode = deviceInputNodeResult.DeviceInputNode;
+
+            _deviceInputNode.AddOutgoingConnection(_inputCaptureSubmixNode);
 
             /*
             echoEffect = new EchoEffectDefinition(_graph);
@@ -52,7 +82,7 @@ namespace Touchofunk
 
             // All nodes can have an OutgoingGain property
             // Setting the gain on the Submix node attenuates the output of the node
-            _submixNode.OutgoingGain = 0.5;
+            //_submixNode.OutgoingGain = 0.5;
         }
     }
 }
