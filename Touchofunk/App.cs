@@ -15,8 +15,8 @@ namespace Touchofunk
 {
 	class App : IFrameworkView, IFrameworkViewSource
 	{
-		private WinRTBridge.WinRTBridge m_Bridge;
-		private AppCallbacks m_AppCallbacks;
+		private WinRTBridge.WinRTBridge _Bridge;
+		private AppCallbacks _AppCallbacks;
 
         private AudioGraphImpl _audioGraphImpl;
 
@@ -25,10 +25,10 @@ namespace Touchofunk
             DebugUtil.CheckMainThread();
 
 			SetupOrientation();
-			m_AppCallbacks = new AppCallbacks();
+			_AppCallbacks = new AppCallbacks();
 
 			// Allow clients of this class to append their own callbacks.
-			AddAppCallbacks(m_AppCallbacks);
+			AddAppCallbacks(_AppCallbacks);
 		}
 
 		public virtual async void Initialize(CoreApplicationView applicationView)
@@ -39,10 +39,10 @@ namespace Touchofunk
 			CoreApplication.Suspending += CoreApplication_Suspending;
 
 			// Setup scripting bridge
-			m_Bridge = new WinRTBridge.WinRTBridge();
-			m_AppCallbacks.SetBridge(m_Bridge);
+			_Bridge = new WinRTBridge.WinRTBridge();
+			_AppCallbacks.SetBridge(_Bridge);
 
-			m_AppCallbacks.SetCoreApplicationViewEvents(applicationView);
+			_AppCallbacks.SetCoreApplicationViewEvents(applicationView);
 
             _audioGraphImpl = new AudioGraphImpl();
             await _audioGraphImpl.InitializeAsync();
@@ -76,20 +76,20 @@ namespace Touchofunk
 			}
 #pragma warning restore 4014
 
-			m_AppCallbacks.SetCoreWindowEvents(coreWindow);
-			m_AppCallbacks.InitializeD3DWindow();
+			_AppCallbacks.SetCoreWindowEvents(coreWindow);
+			_AppCallbacks.InitializeD3DWindow();
 		}
 
 		public void Load(string entryPoint)
 		{
             // TODO: where can this go so it actually works?????
             // this makes it be a hand until the Unity banner finishes, but then it reverts to arrow.  :-(
-            m_AppCallbacks.SetCursor(new CoreCursor(CoreCursorType.Hand, (uint)0));
+            _AppCallbacks.SetCursor(new CoreCursor(CoreCursorType.Hand, (uint)0));
         }
 
         public void Run()
 		{
-            m_AppCallbacks.Run();
+            _AppCallbacks.Run();
         }
 
         public void Uninitialize()

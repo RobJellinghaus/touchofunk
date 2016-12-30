@@ -27,11 +27,11 @@ namespace Holofunk.Core
     /// </summary>
     public struct Time<TTime>
     {
-        readonly long m_time;
+        readonly long _time;
 
         public Time(long time)
         {
-            m_time = time;
+            _time = time;
         }
 
         public override string ToString()
@@ -51,7 +51,7 @@ namespace Holofunk.Core
 
         public override int GetHashCode()
         {
-            return m_time.GetHashCode();
+            return _time.GetHashCode();
         }
 
         public static Time<TTime> Min(Time<TTime> first, Time<TTime> second)
@@ -66,7 +66,7 @@ namespace Holofunk.Core
 
         public static implicit operator long(Time<TTime> time)
         {
-            return time.m_time;
+            return time._time;
         }
 
         public static implicit operator Time<TTime>(long time)
@@ -120,12 +120,12 @@ namespace Holofunk.Core
     /// <typeparam name="TTime"></typeparam>
     public struct Duration<TTime>
     {
-        readonly long m_count;
+        readonly long _count;
 
         public Duration(long count)
         {
             HoloDebug.Assert(count >= 0);
-            m_count = count;
+            _count = count;
         }
 
         public override string ToString()
@@ -135,7 +135,7 @@ namespace Holofunk.Core
 
         public static implicit operator long(Duration<TTime> offset)
         {
-            return offset.m_count;
+            return offset._count;
         }
 
         public static implicit operator Duration<TTime>(long value)
@@ -155,7 +155,7 @@ namespace Holofunk.Core
 
         public override int GetHashCode()
         {
-            return m_count.GetHashCode();
+            return _count.GetHashCode();
         }
 
         public static Duration<TTime> Min(Duration<TTime> first, Duration<TTime> second)
@@ -225,7 +225,7 @@ namespace Holofunk.Core
     {
         public readonly Time<TTime> InitialTime;
         public readonly Duration<TTime> Duration;
-        readonly bool m_isInitialized;
+        readonly bool _isInitialized;
 
         public Interval(Time<TTime> initialTime, Duration<TTime> duration)
         {
@@ -233,7 +233,7 @@ namespace Holofunk.Core
 
             InitialTime = initialTime;
             Duration = duration;
-            m_isInitialized = true;
+            _isInitialized = true;
         }
 
         public override string ToString()
@@ -243,7 +243,7 @@ namespace Holofunk.Core
 
         public static Interval<TTime> Empty { get { return new Interval<TTime>(0, 0); } }
 
-        public bool IsInitialized { get { return m_isInitialized; } }
+        public bool IsInitialized { get { return _isInitialized; } }
 
         public bool IsEmpty
         {

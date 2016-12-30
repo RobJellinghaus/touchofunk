@@ -18,7 +18,7 @@ namespace Holofunk.Core
         /// <summary>
         /// Allocator for buffer management.
         /// </summary>
-        readonly BufferAllocator<TValue> m_allocator;
+        readonly BufferAllocator<TValue> _allocator;
 
         /// <summary>
         /// The slices making up the buffered data itself.
@@ -27,28 +27,28 @@ namespace Holofunk.Core
         /// The InitialTime of each entry in this list must exactly equal the InitialTime + Duration of the
         /// previous entry; in other words, these are densely arranged in time.
         /// </remarks>
-        readonly List<TimedSlice<TTime, TValue>> m_data = new List<TimedSlice<TTime, TValue>>();
+        readonly List<TimedSlice<TTime, TValue>> _data = new List<TimedSlice<TTime, TValue>>();
 
         /// <summary>
         /// The maximum amount that this stream will buffer while it is open; more appends will cause
         /// earlier data to be dropped.  If 0, no buffering limit will be enforced.
         /// </summary>
-        readonly Duration<TTime> m_maxBufferedDuration;
+        readonly Duration<TTime> _maxBufferedDuration;
 
         /// <summary>
         /// Temporary space for, e.g., the IntPtr Append method.
         /// </summary>
-        readonly Buf<TValue> m_tempBuffer = new Buf<TValue>(-1, new TValue[1024]); // -1 id = temp buf
+        readonly Buf<TValue> _tempBuffer = new Buf<TValue>(-1, new TValue[1024]); // -1 id = temp buf
 
         /// <summary>
         /// This stream holds onto an entire buffer and copies data into it when appending.
         /// </summary>
-        Slice<TTime, TValue> m_remainingFreeBuffer;
+        Slice<TTime, TValue> _remainingFreeBuffer;
 
         /// <summary>
         /// The mapper that converts absolute time into relative time for this stream.
         /// </summary>
-        IntervalMapper<TTime> m_intervalMapper;
+        IntervalMapper<TTime> _intervalMapper;
 
         /// <summary>
         /// Action to copy IntPtr data into a Slice.
@@ -57,7 +57,7 @@ namespace Holofunk.Core
         /// Since .NET offers no way to marshal into an array of generic type, we can't express this
         /// function cleanly except in a specialized method defined in a subclass.
         /// </remarks>
-        readonly Action<IntPtr, Slice<TTime, TValue>> m_copyIntPtrToSliceAction;
+        readonly Action<IntPtr, Slice<TTime, TValue>> _copyIntPtrToSliceAction;
 
         /// <summary>
         /// Action to copy Slice data into an IntPtr.
@@ -66,7 +66,7 @@ namespace Holofunk.Core
         /// Since .NET offers no way to marshal into an array of generic type, we can't express this
         /// function cleanly except in a specialized method defined in a subclass.
         /// </remarks>
-        readonly Action<Slice<TTime, TValue>, IntPtr> m_copySliceToIntPtrAction;
+        readonly Action<Slice<TTime, TValue>, IntPtr> _copySliceToIntPtrAction;
 
         /// <summary>
         /// Action to obtain an IntPtr directly on a Slice's data, and invoke another action with that IntPtr.
@@ -75,9 +75,9 @@ namespace Holofunk.Core
         /// Again, since .NET does not allow taking the address of a generic array, we must use a
         /// specialized implementation wrapped in this generic signature.
         /// </remarks>
-        readonly Action<Slice<TTime, TValue>, Action<IntPtr, int>> m_rawSliceAccessAction;
+        readonly Action<Slice<TTime, TValue>, Action<IntPtr, int>> _rawSliceAccessAction;
 
-        readonly bool m_useContinuousLoopingMapper = false;
+        readonly bool _useContinuousLoopingMapper = false;
 
         public BufferedSliceStream(
             Time<TTime> initialTime,
@@ -90,16 +90,16 @@ namespace Holofunk.Core
             bool useContinuousLoopingMapper = false)
             : base(initialTime, sliverSize)
         {
-            m_allocator = allocator;
-            m_copyIntPtrToSliceAction = copyIntPtrToSliceAction;
-            m_copySliceToIntPtrAction = copySliceToIntPtrAction;
-            m_rawSliceAccessAction = rawSliceAccessAction;
-            m_maxBufferedDuration = maxBufferedDuration;
-            m_useContinuousLoopingMapper = useContinuousLoopingMapper;
+            _allocator = allocator;
+            _copyIntPtrToSliceAction = copyIntPtrToSliceAction;
+            _copySliceToIntPtrAction = copySliceToIntPtrAction;
+            _rawSliceAccessAction = rawSliceAccessAction;
+            _maxBufferedDuration = maxBufferedDuration;
+            _useContinuousLoopingMapper = useContinuousLoopingMapper;
 
             // as long as we are appending, we use the identity mapping
             // TODO: support delay mapping
-            m_intervalMapper = new IdentityIntervalMapper<TTime, TValue>(this);
+            _intervalMapper = new IdentityIntervalMapper<TTime, TValue>(this);
         }
 
         public override string ToString()
@@ -109,9 +109,9 @@ namespace Holofunk.Core
 
         void EnsureFreeBuffer()
         {
-            if (m_remainingFreeBuffer.IsEmpty()) {
-                Buf<TValue> chunk = m_allocator.Allocate();
-                m_remainingFreeBuffer = new Slice<TTime, TValue>(
+            if (_remainingFreeBuffer.IsEmpty()) {
+                Buf<TValue> chunk = _allocator.Allocate();
+                _remainingFreeBuffer = new Slice<TTime, TValue>(
                     chunk,
                     0,
                     (chunk.Data.Length / SliverSize),
@@ -123,15 +123,15 @@ namespace Holofunk.Core
         {
             base.Shut(finalDuration);
             // swap out our mappers, we're looping now
-            if (m_useContinuousLoopingMapper) {
-                m_intervalMapper = new LoopingIntervalMapper<TTime, TValue>(this);
+            if (_useContinuousLoopingMapper) {
+                _intervalMapper = new LoopingIntervalMapper<TTime, TValue>(this);
             }
             else {
-                m_intervalMapper = new SimpleLoopingIntervalMapper<TTime, TValue>(this);
+                _intervalMapper = new SimpleLoopingIntervalMapper<TTime, TValue>(this);
             }
 
 #if SPAMAUDIO
-            foreach (TimedSlice<TTime, TValue> timedSlice in m_data) {
+            foreach (TimedSlice<TTime, TValue> timedSlice in _data) {
                 Spam.Audio.WriteLine("BufferedSliceStream.Shut: next slice time " + timedSlice.InitialTime + ", slice " + timedSlice.Slice);
             }
 #endif
@@ -144,9 +144,9 @@ namespace Holofunk.Core
         /// <returns></returns>
         Slice<TTime, TValue> TempSlice(Duration<TTime> duration)
         {
-            Duration<TTime> maxDuration = m_tempBuffer.Data.Length / SliverSize;
+            Duration<TTime> maxDuration = _tempBuffer.Data.Length / SliverSize;
             return new Slice<TTime, TValue>(
-                m_tempBuffer,
+                _tempBuffer,
                 0,
                 duration > maxDuration ? maxDuration : duration,
                 SliverSize);
@@ -162,11 +162,11 @@ namespace Holofunk.Core
             while (duration > 0) {
                 Slice<TTime, TValue> tempSlice = TempSlice(duration);
 
-                m_copyIntPtrToSliceAction(p, tempSlice);
+                _copyIntPtrToSliceAction(p, tempSlice);
                 Append(tempSlice);
                 duration -= tempSlice.Duration;
             }
-            m_discreteDuration += duration;
+            _discreteDuration += duration;
         }
 
         /// <summary>
@@ -176,18 +176,18 @@ namespace Holofunk.Core
         {
             HoloDebug.Assert(!IsShut);
 
-            // Try to keep copying source into m_remainingFreeBuffer
+            // Try to keep copying source into _remainingFreeBuffer
             while (!source.IsEmpty()) {
                 EnsureFreeBuffer();
 
                 // if source is larger than available free buffer, then we'll iterate
                 Slice<TTime, TValue> originalSource = source;
-                if (source.Duration > m_remainingFreeBuffer.Duration) {
-                    source = source.Subslice(0, m_remainingFreeBuffer.Duration);
+                if (source.Duration > _remainingFreeBuffer.Duration) {
+                    source = source.Subslice(0, _remainingFreeBuffer.Duration);
                 }
 
                 // now we know source can fit
-                Slice<TTime, TValue> dest = m_remainingFreeBuffer.SubsliceOfDuration(source.Duration);
+                Slice<TTime, TValue> dest = _remainingFreeBuffer.SubsliceOfDuration(source.Duration);
                 source.CopyTo(dest);
 
                 // dest may well be adjacent to the previous slice, if there is one, since we may
@@ -203,29 +203,29 @@ namespace Holofunk.Core
 
         /// <summary>
         /// Internally append this slice (which must be allocated from our free buffer); this does the work
-        /// of coalescing, updating m_data and other fields, etc.
+        /// of coalescing, updating _data and other fields, etc.
         /// </summary>
         Slice<TTime, TValue> InternalAppend(Slice<TTime, TValue> dest)
         {
             // dest must be from our free buffer
-            HoloDebug.Assert(dest.Buffer.Data == m_remainingFreeBuffer.Buffer.Data);
+            HoloDebug.Assert(dest.Buffer.Data == _remainingFreeBuffer.Buffer.Data);
 
-            if (m_data.Count == 0) {
-                m_data.Add(new TimedSlice<TTime, TValue>(InitialTime, dest));
+            if (_data.Count == 0) {
+                _data.Add(new TimedSlice<TTime, TValue>(InitialTime, dest));
             }
             else {
-                TimedSlice<TTime, TValue> last = m_data[m_data.Count - 1];
+                TimedSlice<TTime, TValue> last = _data[_data.Count - 1];
                 if (last.Slice.Precedes(dest)) {
-                    m_data[m_data.Count - 1] = new TimedSlice<TTime, TValue>(last.InitialTime, last.Slice.UnionWith(dest));
+                    _data[_data.Count - 1] = new TimedSlice<TTime, TValue>(last.InitialTime, last.Slice.UnionWith(dest));
                 }
                 else {
                     Spam.Audio.WriteLine("BufferedSliceStream.InternalAppend: last did not precede; last slice is " + last.Slice + ", last slice time " + last.InitialTime + ", dest is " + dest);
-                    m_data.Add(new TimedSlice<TTime, TValue>(last.InitialTime + last.Slice.Duration, dest));
+                    _data.Add(new TimedSlice<TTime, TValue>(last.InitialTime + last.Slice.Duration, dest));
                 }
             }
 
-            m_discreteDuration += dest.Duration;
-            m_remainingFreeBuffer = m_remainingFreeBuffer.SubsliceStartingAt(dest.Duration);
+            _discreteDuration += dest.Duration;
+            _remainingFreeBuffer = _remainingFreeBuffer.SubsliceStartingAt(dest.Duration);
             
             return dest;
         }
@@ -243,7 +243,7 @@ namespace Holofunk.Core
 
             EnsureFreeBuffer();
 
-            Slice<TTime, TValue> destination = m_remainingFreeBuffer.SubsliceOfDuration(1);
+            Slice<TTime, TValue> destination = _remainingFreeBuffer.SubsliceOfDuration(1);
 
             int sourceOffset = startOffset;
             int destinationOffset = 0;
@@ -266,25 +266,25 @@ namespace Holofunk.Core
         /// Internal because wrapper streams want to delegate to this when they are themselves Trimmed.</remarks>
         void Trim()
         {
-            if (m_maxBufferedDuration == 0 || m_discreteDuration <= m_maxBufferedDuration) {
+            if (_maxBufferedDuration == 0 || _discreteDuration <= _maxBufferedDuration) {
                 return;
             }
 
-            while (DiscreteDuration > m_maxBufferedDuration) {
-                Duration<TTime> toTrim = DiscreteDuration - m_maxBufferedDuration;
+            while (DiscreteDuration > _maxBufferedDuration) {
+                Duration<TTime> toTrim = DiscreteDuration - _maxBufferedDuration;
                 // get the first slice
-                TimedSlice<TTime, TValue> firstSlice = m_data[0];
+                TimedSlice<TTime, TValue> firstSlice = _data[0];
                 if (firstSlice.Slice.Duration <= toTrim) {
-                    m_data.RemoveAt(0);
+                    _data.RemoveAt(0);
 #if DEBUG
                     // check to make sure our later stream data doesn't reference this one we're about to free
-                    foreach (TimedSlice<TTime, TValue> slice in m_data) {
+                    foreach (TimedSlice<TTime, TValue> slice in _data) {
                         HoloDebug.Assert(slice.Slice.Buffer.Data != firstSlice.Slice.Buffer.Data);
                     }
 #endif
-                    m_allocator.Free(firstSlice.Slice.Buffer);
-                    m_discreteDuration -= firstSlice.Slice.Duration;
-                    m_initialTime += firstSlice.Slice.Duration;
+                    _allocator.Free(firstSlice.Slice.Buffer);
+                    _discreteDuration -= firstSlice.Slice.Duration;
+                    _initialTime += firstSlice.Slice.Duration;
                 }
                 else {
                     TimedSlice<TTime, TValue> newFirstSlice = new TimedSlice<TTime, TValue>(
@@ -294,9 +294,9 @@ namespace Holofunk.Core
                                 firstSlice.Slice.Offset + toTrim,
                                 firstSlice.Slice.Duration - toTrim,
                                 SliverSize));
-                    m_data[0] = newFirstSlice;
-                    m_discreteDuration -= toTrim;
-                    m_initialTime += toTrim;
+                    _data[0] = newFirstSlice;
+                    _discreteDuration -= toTrim;
+                    _initialTime += toTrim;
                 }
             }
         }
@@ -305,7 +305,7 @@ namespace Holofunk.Core
         {
             while (!sourceInterval.IsEmpty) {
                 Slice<TTime, TValue> source = GetNextSliceAt(sourceInterval);
-                m_copySliceToIntPtrAction(source, p);
+                _copySliceToIntPtrAction(source, p);
                 sourceInterval = sourceInterval.SubintervalStartingAt(source.Duration);
             }
         }
@@ -326,7 +326,7 @@ namespace Holofunk.Core
         /// <returns></returns>
         public override Slice<TTime, TValue> GetNextSliceAt(Interval<TTime> interval)
         {
-            Interval<TTime> firstMappedInterval = m_intervalMapper.MapNextSubInterval(interval);
+            Interval<TTime> firstMappedInterval = _intervalMapper.MapNextSubInterval(interval);
 
             if (firstMappedInterval.IsEmpty) {
                 return Slice<TTime, TValue>.Empty;
@@ -353,7 +353,7 @@ namespace Holofunk.Core
             // Get the biggest available slice at firstMappedInterval.InitialTime.
             // First, get the index of the slice just after the one we want.
             TimedSlice<TTime, TValue> target = new TimedSlice<TTime, TValue>(firstMappedInterval.InitialTime, Slice<TTime, TValue>.Empty);
-            int originalIndex = m_data.BinarySearch(target, TimedSlice<TTime, TValue>.Comparer.Instance);
+            int originalIndex = _data.BinarySearch(target, TimedSlice<TTime, TValue>.Comparer.Instance);
             int index = originalIndex;
 
             if (index < 0) {
@@ -363,18 +363,18 @@ namespace Holofunk.Core
                 HoloDebug.Assert(index >= 0);
             }
 
-            TimedSlice<TTime, TValue> foundTimedSlice = m_data[index];
+            TimedSlice<TTime, TValue> foundTimedSlice = _data[index];
             return foundTimedSlice;
         }
 
         public override void Dispose()
         {
             // release each T[] back to the buffer
-            foreach (TimedSlice<TTime, TValue> slice in m_data) {
+            foreach (TimedSlice<TTime, TValue> slice in _data) {
                 // this requires that Free be idempotent; in general we don't expect
                 // many slices per buffer, since each Stream allocates from a private
                 // buffer and coalesces aggressively
-                m_allocator.Free(slice.Slice.Buffer);
+                _allocator.Free(slice.Slice.Buffer);
             }
         }
     }
@@ -445,6 +445,9 @@ namespace Holofunk.Core
         }
     }
 
+    /// <summary>
+    /// A dense stream of float samples indexed by discrete sample time.
+    /// </summary>
     public class DenseSampleFloatStream : BufferedSliceStream<Sample, float>
     {
         public DenseSampleFloatStream(

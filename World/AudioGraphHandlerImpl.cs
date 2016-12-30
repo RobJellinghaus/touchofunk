@@ -11,7 +11,7 @@ using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
 using Windows.Media.Render;
 
-namespace Touchofunk
+namespace Holofunk.World
 {
     internal class AudioGraphImpl : IHoloAudioGraph
     {

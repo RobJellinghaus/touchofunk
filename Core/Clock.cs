@@ -18,46 +18,46 @@ namespace Holofunk.Core
         public const int TimepointRateHz = 44100;
 
         // The current BPM of this Clock.
-        float m_beatsPerMinute;
+        float _beatsPerMinute;
 
         // The beats per MEASURE.  e.g. 3/4 time = 3 beats per measure.
         // TODO: make this actually mean something; it is only partly implemented right now.
-        readonly int m_beatsPerMeasure;
+        readonly int _beatsPerMeasure;
 
         /// <summary>
         /// The number of samples since the beginning of Holofunk.
         /// </summary>
-        Time<Sample> m_time;
+        Time<Sample> _time;
 
         /// <summary>
         /// How many input channels are there?
         /// </summary>
-        readonly int m_inputChannelCount;
+        readonly int _inputChannelCount;
 
         /// <summary>What is the floating-point duration of a beat, in samples?</summary>
         // This will be a non-integer value if the BPM does not exactly divide the sample rate.
-        ContinuousDuration m_continuousBeatDuration;
+        ContinuousDuration _continuousBeatDuration;
 
         const double TicksPerSecond = 10 * 1000 * 1000;
 
         public Clock(float beatsPerMinute, int beatsPerMeasure, int inputChannelCount)
         {
-            m_beatsPerMinute = beatsPerMinute;
-            m_beatsPerMeasure = beatsPerMeasure;
-            m_inputChannelCount = inputChannelCount;
+            _beatsPerMinute = beatsPerMinute;
+            _beatsPerMeasure = beatsPerMeasure;
+            _inputChannelCount = inputChannelCount;
 
             CalculateBeatDuration();
         }
 
         void CalculateBeatDuration()
         {
-            m_continuousBeatDuration = (ContinuousDuration)(((float)TimepointRateHz * 60f) / m_beatsPerMinute);
+            _continuousBeatDuration = (ContinuousDuration)(((float)TimepointRateHz * 60f) / _beatsPerMinute);
         }
 
         /// <summary>Advance this clock.</summary>
         public void Advance(Duration<Sample> duration)
         {
-            m_time += duration;
+            _time += duration;
         }
 
         /// <summary>The beats per minute of this clock.</summary>
@@ -68,11 +68,11 @@ namespace Holofunk.Core
         { 
             get 
             { 
-                return m_beatsPerMinute; 
+                return _beatsPerMinute; 
             }
             set 
             { 
-                m_beatsPerMinute = value;
+                _beatsPerMinute = value;
                 CalculateBeatDuration();
             } 
         }
@@ -82,7 +82,7 @@ namespace Holofunk.Core
             // Stereo channel, hence twice as many samples as timepoints.
             get 
             { 
-                return Time(m_time); 
+                return Time(_time); 
             }
         }
 
@@ -93,17 +93,17 @@ namespace Holofunk.Core
 
         public double BeatsPerSecond
         {
-            get { return ((double)m_beatsPerMinute) / 60.0; }
+            get { return ((double)_beatsPerMinute) / 60.0; }
         }
 
         public ContinuousDuration ContinuousBeatDuration
         {
-            get { return m_continuousBeatDuration; }
+            get { return _continuousBeatDuration; }
         }
 
         public int BeatsPerMeasure
         {
-            get { return m_beatsPerMeasure; }
+            get { return _beatsPerMeasure; }
         }
     }
 

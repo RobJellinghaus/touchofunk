@@ -14,14 +14,14 @@ namespace Holofunk.StateMachines
 {
     public abstract class State<TEvent>
     {
-        readonly string m_label;
+        readonly string _label;
 
         protected State(string label)
         {
-            m_label = label;
+            _label = label;
         }
 
-        protected String Label { get { return m_label; } }
+        protected String Label { get { return _label; } }
 
         /// <summary>
         /// Enter this state, passing in the model from the parent, and obtaining the new model.
@@ -71,13 +71,13 @@ namespace Holofunk.StateMachines
         where TModel : Model
         where TParentModel : Model
     {
-        readonly State<TEvent, TParentModel> m_parent;
+        readonly State<TEvent, TParentModel> _parent;
 
-        readonly List<Action<TEvent, TModel>> m_entryActions;
-        readonly List<Action<TEvent, TModel>> m_exitActions;
+        readonly List<Action<TEvent, TModel>> _entryActions;
+        readonly List<Action<TEvent, TModel>> _exitActions;
 
-        readonly Func<TParentModel, TModel> m_entryConversionFunc;
-        readonly Func<TModel, TParentModel> m_exitConversionFunc;
+        readonly Func<TParentModel, TModel> _entryConversionFunc;
+        readonly Func<TModel, TParentModel> _exitConversionFunc;
 
         public State(
             string label,
@@ -109,12 +109,12 @@ namespace Holofunk.StateMachines
             Func<TModel, TParentModel> exitConversionFunc = null)
             : base(label)
         {
-            m_parent = parent;
-            m_entryActions = new List<Action<TEvent, TModel>>(entryActions);
-            m_exitActions = new List<Action<TEvent, TModel>>(exitActions);
+            _parent = parent;
+            _entryActions = new List<Action<TEvent, TModel>>(entryActions);
+            _exitActions = new List<Action<TEvent, TModel>>(exitActions);
 
-            m_entryConversionFunc = entryConversionFunc;
-            m_exitConversionFunc = exitConversionFunc;
+            _entryConversionFunc = entryConversionFunc;
+            _exitConversionFunc = exitConversionFunc;
         }
 
         public override State<TEvent> ComputeDestination(Transition<TEvent> transition, TEvent evt, Model model)
@@ -128,15 +128,15 @@ namespace Holofunk.StateMachines
         {
             Spam.Model.WriteLine("State.Enter: state " + Label + ", event: " + evt + ", parentModel: " + parentModel.GetType());
             TModel thisState;
-            if (m_entryConversionFunc != null) {
-                thisState = m_entryConversionFunc((TParentModel)parentModel);
+            if (_entryConversionFunc != null) {
+                thisState = _entryConversionFunc((TParentModel)parentModel);
             }
             else {
                 // had better be the same type!
                 thisState = (TModel)parentModel;
             }
-            for (int i = 0; i < m_entryActions.Count; i++) {
-                m_entryActions[i](evt, thisState);
+            for (int i = 0; i < _entryActions.Count; i++) {
+                _entryActions[i](evt, thisState);
             }
             return thisState;
         }
@@ -145,12 +145,12 @@ namespace Holofunk.StateMachines
         {
             Spam.Model.WriteLine("State.Exit: state " + Label + ", event type: " + evt.GetType() + ", model.GetType(): " + model.GetType());
             TModel thisModel = (TModel)model;
-            for (int i = 0; i < m_exitActions.Count; i++) {
-                m_exitActions[i](evt, thisModel);
+            for (int i = 0; i < _exitActions.Count; i++) {
+                _exitActions[i](evt, thisModel);
             }
             TParentModel parentModel;
-            if (m_exitConversionFunc != null) {
-                parentModel = m_exitConversionFunc(thisModel);
+            if (_exitConversionFunc != null) {
+                parentModel = _exitConversionFunc(thisModel);
             }
             else {
                 // Terrible, but meets the expectation: these must be dynamically the same type.
@@ -159,12 +159,12 @@ namespace Holofunk.StateMachines
             return parentModel;
         }
 
-        public override State<TEvent> Parent { get { return m_parent; } }
+        public override State<TEvent> Parent { get { return _parent; } }
 
         public override Model GetParentModel(Model thisModel)
         {
-            if (m_exitConversionFunc != null) {
-                return m_exitConversionFunc((TModel)thisModel);
+            if (_exitConversionFunc != null) {
+                return _exitConversionFunc((TModel)thisModel);
             }
             else {
                 return thisModel;

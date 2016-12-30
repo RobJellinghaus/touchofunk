@@ -17,7 +17,7 @@ namespace Holofunk.Core
         /// <summary>
         /// The backing store; logically divided into slivers.
         /// </summary>
-        readonly Buf<TValue> m_buffer;
+        readonly Buf<TValue> _buffer;
 
         /// <summary>
         /// The number of slivers contained.
@@ -27,7 +27,7 @@ namespace Holofunk.Core
         /// <summary>
         /// The index to the sliver at which this slice actually begins.
         /// </summary>
-        readonly Duration<TTime> m_offset;
+        readonly Duration<TTime> _offset;
 
         /// <summary>
         /// The size of each sliver in this slice; a count of T.
@@ -44,8 +44,8 @@ namespace Holofunk.Core
             HoloDebug.Assert(duration >= 0);
             HoloDebug.Assert((offset * sliverSize) + (duration * sliverSize) <= buffer.Data.Length);
 
-            m_buffer = buffer;
-            m_offset = offset;
+            _buffer = buffer;
+            _offset = offset;
             Duration = duration;
             SliverSize = sliverSize;
         }
@@ -70,28 +70,28 @@ namespace Holofunk.Core
         /// <summary>
         /// For use by extension methods only
         /// </summary>
-        internal Buf<TValue> Buffer { get { return m_buffer; } }
+        internal Buf<TValue> Buffer { get { return _buffer; } }
 
         /// <summary>
         /// For use by extension methods only
         /// </summary>
-        internal Duration<TTime> Offset { get { return m_offset; } }
+        internal Duration<TTime> Offset { get { return _offset; } }
 
         public TValue this[Duration<TTime> offset, int subindex]
         {
             get
             {
-                Duration<TTime> totalOffset = m_offset + offset;
+                Duration<TTime> totalOffset = _offset + offset;
                 Debug.Assert(totalOffset * SliverSize < Buffer.Data.Length);
                 long finalOffset = totalOffset * SliverSize + subindex;
-                return m_buffer.Data[finalOffset];
+                return _buffer.Data[finalOffset];
             }
             set
             {
-                Duration<TTime> totalOffset = m_offset + offset;
+                Duration<TTime> totalOffset = _offset + offset;
                 Debug.Assert(totalOffset < (Buffer.Data.Length / SliverSize));
                 long finalOffset = totalOffset * SliverSize + subindex;
-                m_buffer.Data[finalOffset] = value;
+                _buffer.Data[finalOffset] = value;
             }
         }
 
@@ -103,7 +103,7 @@ namespace Holofunk.Core
             Debug.Assert(initialOffset >= 0); // can't slice before the beginning of this slice
             Debug.Assert(duration >= 0); // must be nonnegative count
             Debug.Assert(initialOffset + duration <= Duration); // can't slice beyond the end
-            return new Slice<TTime, TValue>(m_buffer, m_offset + initialOffset, duration, SliverSize);
+            return new Slice<TTime, TValue>(_buffer, _offset + initialOffset, duration, SliverSize);
         }
 
         /// <summary>
@@ -134,23 +134,23 @@ namespace Holofunk.Core
             // TODO: what about these int casts?  Is Unity 32-bit only or something?  Why does Array.Copy not have the overload that takes longs?
             // TODO: ensure individual backing arrays never need to go beyond 30-bit indices
             Array.Copy(
-                m_buffer.Data,
-                (int)m_offset * SliverSize,
-                destination.m_buffer.Data,
-                (int)destination.m_offset * destination.SliverSize,
+                _buffer.Data,
+                (int)_offset * SliverSize,
+                destination._buffer.Data,
+                (int)destination._offset * destination.SliverSize,
                 (int)Duration * SliverSize);
         }
 
         public void CopyFrom(TValue[] source, int sourceOffset, int destinationSubIndex, int subWidth)
         {
             Debug.Assert((int)(sourceOffset + subWidth) <= source.Length);
-            int destinationOffset = (int)(m_offset * SliverSize + destinationSubIndex);
-            Debug.Assert(destinationOffset + subWidth <= m_buffer.Data.Length);
+            int destinationOffset = (int)(_offset * SliverSize + destinationSubIndex);
+            Debug.Assert(destinationOffset + subWidth <= _buffer.Data.Length);
 
             Array.Copy(
                 source,
                 (int)sourceOffset,
-                m_buffer.Data,
+                _buffer.Data,
                 destinationOffset,
                 subWidth);
         }
@@ -158,19 +158,19 @@ namespace Holofunk.Core
         /// <summary>Are these samples adjacent in their underlying storage?</summary>
         public bool Precedes(Slice<TTime, TValue> next)
         {
-            return m_buffer.Data == next.m_buffer.Data && m_offset + Duration == next.m_offset;
+            return _buffer.Data == next._buffer.Data && _offset + Duration == next._offset;
         }
 
         /// <summary>Merge two adjacent samples into a single sample.</summary>
         public Slice<TTime, TValue> UnionWith(Slice<TTime, TValue> next)
         {
             HoloDebug.Assert(Precedes(next));
-            return new Slice<TTime, TValue>(m_buffer, m_offset, Duration + next.Duration, SliverSize);
+            return new Slice<TTime, TValue>(_buffer, _offset, Duration + next.Duration, SliverSize);
         }
 
         public override string ToString()
         {
-            return "Slice[buffer " + m_buffer + ", offset " + m_offset + ", duration " + Duration + ", sliverSize " + SliverSize + "]";
+            return "Slice[buffer " + _buffer + ", offset " + _offset + ", duration " + Duration + ", sliverSize " + SliverSize + "]";
         }
 
         /// <summary>

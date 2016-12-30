@@ -107,15 +107,26 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actor.cs" />
     <Compile Include="AudioGraphHandlerImpl.cs" />
-    <Compile Include="Class1.cs" />
+    <Compile Include="Loopie.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="World.cs" />
     <EmbeddedResource Include="Properties\Loopies.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{8763bdb0-4143-4b71-bdee-d295bb66b3e9}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GeneratedProjects\UWP\Assembly-CSharp\Assembly-CSharp.csproj">
       <Project>{fba57953-c0c3-f9d8-e86a-9f7c063b5fde}</Project>
       <Name>Assembly-CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StateMachine\StateMachine.csproj">
+      <Project>{af8c9f37-37eb-4f00-8b6f-cbd07b1c71e4}</Project>
+      <Name>StateMachine</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -12,27 +12,27 @@ namespace Holofunk.Core
     public abstract class Averager<T>
     {
         // the buffer of T's
-        readonly T[] m_storage;
+        readonly T[] _storage;
 
         // have we filled the current storage?
-        bool m_storageFull;
+        bool _storageFull;
 
         // what's the next index to be overwritten with the next datum?
-        int m_index;
+        int _index;
 
         // the total
-        T m_total;
+        T _total;
 
         // the current average, so we don't have race conditions about it
-        T m_average;
+        T _average;
 
         public Averager(int capacity)
         {
-            m_storage = new T[capacity];
+            _storage = new T[capacity];
         }
 
         /// <summary>Has this Averager got no data?</summary>
-        public bool IsEmpty { get { return m_index == 0 && !m_storageFull; } }
+        public bool IsEmpty { get { return _index == 0 && !_storageFull; } }
 
         /// <summary>Update this Averager with another data point.</summary>
         public void Update(T nextT)
@@ -41,19 +41,19 @@ namespace Holofunk.Core
                 return;
             }
 
-            if (m_index == m_storage.Length) {
+            if (_index == _storage.Length) {
                 // might as well unconditionally set it, branching is more expensive
-                m_storageFull = true;
-                m_index = 0;
+                _storageFull = true;
+                _index = 0;
             }
 
-            if (m_storageFull) {
-                m_total = Subtract(m_total, m_storage[m_index]);
+            if (_storageFull) {
+                _total = Subtract(_total, _storage[_index]);
             }
-            m_total = Add(m_total, nextT);
-            m_storage[m_index] = nextT;
-            m_index++;
-            m_average = Divide(m_total, m_storageFull ? m_storage.Length : m_index);
+            _total = Add(_total, nextT);
+            _storage[_index] = nextT;
+            _index++;
+            _average = Divide(_total, _storageFull ? _storage.Length : _index);
         }
 
         /// <summary>Get the average; invalid if Average.IsEmpty.</summary>
@@ -61,7 +61,7 @@ namespace Holofunk.Core
         { 
             get 
             {
-                return m_average;
+                return _average;
             } 
         }
 

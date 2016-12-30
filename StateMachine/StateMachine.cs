@@ -27,60 +27,60 @@ namespace Holofunk.StateMachines
     public abstract class StateMachine<TEvent> 
     {
         // The single initial state of this machine.
-        readonly State<TEvent> m_initialState;
+        readonly State<TEvent> _initialState;
 
         // The root state of this machine.  (This is not verified; machines without a unique
         // root state will fail when making transitions between disjoint roots.)
-        readonly State<TEvent> m_rootState;
+        readonly State<TEvent> _rootState;
 
         // A state -> event -> state transition map.
-        readonly Dictionary<State<TEvent>, List<Transition<TEvent>>> m_transitions
+        readonly Dictionary<State<TEvent>, List<Transition<TEvent>>> _transitions
             = new Dictionary<State<TEvent>, List<Transition<TEvent>>>();
 
         // Func to use when comparing transition events.
-        readonly IComparer<TEvent> m_eventMatcher;
+        readonly IComparer<TEvent> _eventMatcher;
 
         protected StateMachine(State<TEvent> initialState, IComparer<TEvent> eventMatcher)
         {
             HoloDebug.Assert(initialState != null);
 
-            m_initialState = initialState;
-            m_rootState = initialState;
-            while (m_rootState.Parent != null) {
-                m_rootState = m_rootState.Parent;
+            _initialState = initialState;
+            _rootState = initialState;
+            while (_rootState.Parent != null) {
+                _rootState = _rootState.Parent;
             }
-            m_eventMatcher = eventMatcher;
+            _eventMatcher = eventMatcher;
         }
 
-        public State<TEvent> RootState { get { return m_rootState; } }
+        public State<TEvent> RootState { get { return _rootState; } }
 
         protected void AddTransition<TModel>(
             State<TEvent, TModel> source,
             Transition<TEvent,TModel> transition)
             where TModel : Model
         {
-            //HoloDebug.Assert(m_states.Contains(source));
-            //HoloDebug.Assert(m_states.Contains(transition.Destination));
+            //HoloDebug.Assert(_states.Contains(source));
+            //HoloDebug.Assert(_states.Contains(transition.Destination));
 
             List<Transition<TEvent>> list;
-            if (m_transitions.ContainsKey(source)) {
-                list = m_transitions[source];
+            if (_transitions.ContainsKey(source)) {
+                list = _transitions[source];
             }
             else {
                 list = new List<Transition<TEvent>>();
-                m_transitions[source] = list;
+                _transitions[source] = list;
             }
 
             foreach (Transition<TEvent, TModel> t in list) {
                 // if this assertion fires, it is because you tried to add a duplicate transition on the same event from the same state
-                HoloDebug.Assert(m_eventMatcher.Compare(t.Event, transition.Event) != 0);
+                HoloDebug.Assert(_eventMatcher.Compare(t.Event, transition.Event) != 0);
             }
 
             list.Add(transition);
         }
 
         /// <summary>Get the initial state.</summary>
-        public State<TEvent> InitialState { get { return m_initialState; } }
+        public State<TEvent> InitialState { get { return _initialState; } }
 
         /// <summary>If a transition exists from the source state on the given event, return that transition's
         /// destination (or null if no such transition).</summary>
@@ -89,7 +89,7 @@ namespace Holofunk.StateMachines
             TEvent evt, 
             Model model)
         {
-            //HoloDebug.Assert(m_states.Contains(source));
+            //HoloDebug.Assert(_states.Contains(source));
 
             // just walk down transitions in order...
             // arguably we should use IEqualityComparer here, and it might even let us optimize
@@ -98,10 +98,10 @@ namespace Holofunk.StateMachines
             // from both having to generate a hashcode and having to get a total ordering right.
             // ... and we would like foreach, but it forces allocation, and we are trying to
             // avoid that as a rule, so we don't have terrible cleanup issues later.
-            if (m_transitions.ContainsKey(source)) {
-                List<Transition<TEvent>> transitions = m_transitions[source];
+            if (_transitions.ContainsKey(source)) {
+                List<Transition<TEvent>> transitions = _transitions[source];
                 for (int i = 0; i < transitions.Count; i++) {
-                    if (m_eventMatcher.Compare(evt, transitions[i].Event) == 0) {
+                    if (_eventMatcher.Compare(evt, transitions[i].Event) == 0) {
                         // this one be it.  up to user to avoid overlapping subscriptions
                         return source.ComputeDestination(transitions[i], evt, model);
                     }

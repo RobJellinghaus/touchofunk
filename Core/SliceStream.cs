@@ -33,7 +33,7 @@ namespace Holofunk.Core
         /// significant.  The loop duration, on the other hand, is iterated so often that error can and does
         /// accumulate; hence, ContinuousDuration, defined only once shut.
         /// </remarks>
-        protected Time<TTime> m_initialTime;
+        protected Time<TTime> _initialTime;
 
         /// <summary>
         /// The floating-point duration of this stream; only valid once shut.
@@ -42,7 +42,7 @@ namespace Holofunk.Core
         /// This allows streams to have lengths measured in fractional samples, which prevents roundoff error from
         /// causing clock drift when using odd BPM values and looping for long periods.
         /// </remarks>
-        ContinuousDuration m_continuousDuration;
+        ContinuousDuration _continuousDuration;
 
         /// <summary>
         /// As with Slice<typeparam name="TValue"></typeparam>, this defines the number of T values in an
@@ -53,25 +53,25 @@ namespace Holofunk.Core
         /// <summary>
         /// Is this stream shut?
         /// </summary>
-        bool m_isShut;
+        bool _isShut;
 
         protected SliceStream(Time<TTime> initialTime, int sliverSize)
         {
-            m_initialTime = initialTime;
+            _initialTime = initialTime;
             SliverSize = sliverSize;
         }
 
-        public bool IsShut { get { return m_isShut; } }
+        public bool IsShut { get { return _isShut; } }
 
         /// <summary>
         /// The starting time of this Stream.
         /// </summary>
-        public Time<TTime> InitialTime { get { return m_initialTime; } }
+        public Time<TTime> InitialTime { get { return _initialTime; } }
 
         /// <summary>
         /// The floating-point-accurate duration of this stream; only valid once shut.
         /// </summary>
-        public ContinuousDuration ContinuousDuration { get { return m_continuousDuration; } }
+        public ContinuousDuration ContinuousDuration { get { return _continuousDuration; } }
 
         /// <summary>
         /// Shut the stream; no further appends may be accepted.
@@ -81,8 +81,8 @@ namespace Holofunk.Core
         public virtual void Shut(ContinuousDuration finalDuration)
         {
             HoloDebug.Assert(!IsShut);
-            m_isShut = true;
-            m_continuousDuration = finalDuration;
+            _isShut = true;
+            _continuousDuration = finalDuration;
         }
 
         /// <summary>

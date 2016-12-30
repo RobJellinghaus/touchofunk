@@ -16,17 +16,7 @@ namespace Holofunk.Core
     {
         /// <summary>Assertion dialogs can hose Holofunk; this trivial wrapper lets us breakpoint just before we dialog.</summary>
         /// <param name="value"></param>
-        public static void Assert(bool value)
-        {
-            if (!value) {
-                throw new HoloDebugException();
-                Debug.Assert(value);
-            }
-        }
-
-        /// <summary>Assertion dialogs can hose Holofunk; this trivial wrapper lets us breakpoint just before we dialog.</summary>
-        /// <param name="value"></param>
-        public static void Assert(bool value, string message)
+        public static void Assert(bool value, string message = null)
         {
             if (!value) {
                 throw new HoloDebugException();

@@ -20,7 +20,7 @@ namespace Holofunk.Core
         /// <remarks>
         /// Indexed by Frame, regardless of this sparse stream's TTime dimension.
         /// </remarks>
-        readonly DenseSliceStream<Frame, TValue> m_innerStream;
+        readonly DenseSliceStream<Frame, TValue> _innerStream;
 
         /// <summary>
         /// The slices making up the buffered data itself.
@@ -29,14 +29,14 @@ namespace Holofunk.Core
         /// The Duration of each TimedSlice here is exactly 1.  This denotes that each TimedSlice here is
         /// really a sparse point containing exactly one Slice, not a dense interval of multiple slices.
         /// </remarks>
-        readonly List<Time<TTime>> m_times = new List<Time<TTime>>();
+        readonly List<Time<TTime>> _times = new List<Time<TTime>>();
 
         /// <summary>
         /// Temporary space for, e.g., the IntPtr Append method.
         /// </summary>
-        readonly TValue[] m_tempBuffer;
+        readonly TValue[] _tempBuffer;
 
-        readonly int m_maxBufferedFrameCount;
+        readonly int _maxBufferedFrameCount;
 
         public SparseSliceStream(
             Time<TTime> initialTime,
@@ -44,9 +44,9 @@ namespace Holofunk.Core
             int maxBufferedFrameCount = 0)
             : base(initialTime, innerStream.SliverSize)
         {
-            m_innerStream = innerStream;
-            m_maxBufferedFrameCount = maxBufferedFrameCount;
-            m_tempBuffer = new TValue[SliverSize];
+            _innerStream = innerStream;
+            _maxBufferedFrameCount = maxBufferedFrameCount;
+            _tempBuffer = new TValue[SliverSize];
         }
 
         /// <summary>
@@ -57,8 +57,8 @@ namespace Holofunk.Core
             HoloDebug.Assert(!IsShut);
             HoloDebug.Assert(TimeIsAfterLast(absoluteTime));
 
-            m_innerStream.Append(1, p);
-            m_times.Add(absoluteTime);
+            _innerStream.Append(1, p);
+            _times.Add(absoluteTime);
 
             Trim();
         }
@@ -72,11 +72,11 @@ namespace Holofunk.Core
                 return false;
             }
 
-            if (m_times.Count == 0) {
+            if (_times.Count == 0) {
                 return true;
             }
             else {
-                return m_times[m_times.Count - 1] < absoluteTime;
+                return _times[_times.Count - 1] < absoluteTime;
             }
         }
 
@@ -89,8 +89,8 @@ namespace Holofunk.Core
             HoloDebug.Assert(source.Duration == 1);
             HoloDebug.Assert(TimeIsAfterLast(absoluteTime));
 
-            m_innerStream.Append(source);
-            m_times.Add(absoluteTime);
+            _innerStream.Append(source);
+            _times.Add(absoluteTime);
 
             Trim();
         }
@@ -99,15 +99,15 @@ namespace Holofunk.Core
         {
             HoloDebug.Assert(!IsShut);
 
-            if (m_times.Count > 0 && m_times[m_times.Count - 1] == absoluteTime) {
+            if (_times.Count > 0 && _times[_times.Count - 1] == absoluteTime) {
                 // BUGBUG? Is this a sign of major slowdown?
                 return;
             }
 
             HoloDebug.Assert(TimeIsAfterLast(absoluteTime));
 
-            m_innerStream.AppendSliver(source, startOffset, width, stride, height);
-            m_times.Add(absoluteTime);
+            _innerStream.AppendSliver(source, startOffset, width, stride, height);
+            _times.Add(absoluteTime);
 
             Trim();
         }
@@ -120,9 +120,9 @@ namespace Holofunk.Core
         /// </remarks>
         void Trim()
         {
-            if (m_maxBufferedFrameCount > 0) {
-                while (m_times.Count > m_maxBufferedFrameCount) {
-                    m_times.RemoveAt(0);
+            if (_maxBufferedFrameCount > 0) {
+                while (_times.Count > _maxBufferedFrameCount) {
+                    _times.RemoveAt(0);
                 }
             }
         }
@@ -137,16 +137,16 @@ namespace Holofunk.Core
         {
             sourceTime = MapTime(sourceTime);
 
-            for (int i = m_times.Count - 1; i >= 0; i--) {
-                if (m_times[i] < sourceTime) { 
-                    m_innerStream.CopyTo(new Interval<Frame>(i, 1), p);
+            for (int i = _times.Count - 1; i >= 0; i--) {
+                if (_times[i] < sourceTime) { 
+                    _innerStream.CopyTo(new Interval<Frame>(i, 1), p);
                     return true;
                 }
             }
 
             // wrap around if not found
-            if (m_times.Count > 0) {
-                m_innerStream.CopyTo(new Interval<Frame>(m_times.Count - 1, 1), p);
+            if (_times.Count > 0) {
+                _innerStream.CopyTo(new Interval<Frame>(_times.Count - 1, 1), p);
                 return true;
             }
 
@@ -163,16 +163,16 @@ namespace Holofunk.Core
         {
             sourceTime = MapTime(sourceTime);
 
-            for (int i = m_times.Count - 1; i >= 0; i--) {
-                if (m_times[i] < sourceTime) {
-                    return m_innerStream.GetNextSliceAt(new Interval<Frame>(i, 1));
+            for (int i = _times.Count - 1; i >= 0; i--) {
+                if (_times[i] < sourceTime) {
+                    return _innerStream.GetNextSliceAt(new Interval<Frame>(i, 1));
                 }
             }
 
             // if didn't find closest by time going backwards, just return the last available one
             // (since this means you need to wrap around the loop)
-            if (m_times.Count > 0) {
-                return m_innerStream.GetNextSliceAt(new Interval<Frame>(m_times.Count - 1, 1));
+            if (_times.Count > 0) {
+                return _innerStream.GetNextSliceAt(new Interval<Frame>(_times.Count - 1, 1));
             }
             else {
                 return Slice<Frame, TValue>.Empty;
@@ -191,7 +191,7 @@ namespace Holofunk.Core
 
         public override void Dispose()
         {
-            m_innerStream.Dispose();
+            _innerStream.Dispose();
         }
     }
 }

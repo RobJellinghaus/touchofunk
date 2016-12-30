@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateMachine", "StateMachine\StateMachine.csproj", "{AF8C9F37-37EB-4F00-8B6F-CBD07B1C71E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loopies", "Loopies\Loopies.csproj", "{B9E69207-57B2-484D-92A9-950B224B52AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "World", "World\World.csproj", "{B9E69207-57B2-484D-92A9-950B224B52AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

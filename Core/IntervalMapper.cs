@@ -38,40 +38,40 @@ namespace Holofunk.Core
     class IdentityIntervalMapper<TTime, TValue> : IntervalMapper<TTime>
         where TValue : struct
     {
-        DenseSliceStream<TTime, TValue> m_stream;
+        DenseSliceStream<TTime, TValue> _stream;
 
         internal IdentityIntervalMapper(BufferedSliceStream<TTime, TValue> stream)
         {
-            m_stream = stream;
+            _stream = stream;
         }
 
         public override Interval<TTime> MapNextSubInterval(Interval<TTime> input)
         {
-            return input.Intersect(m_stream.DiscreteInterval);
+            return input.Intersect(_stream.DiscreteInterval);
         }
     }
 
     class SimpleLoopingIntervalMapper<TTime, TValue> : IntervalMapper<TTime>
         where TValue : struct
     {
-        DenseSliceStream<TTime, TValue> m_stream;
+        DenseSliceStream<TTime, TValue> _stream;
         internal SimpleLoopingIntervalMapper(BufferedSliceStream<TTime, TValue> stream)
         {
             // Should only use this mapper on shut streams with a fixed ContinuousDuration.
             Debug.Assert(stream.IsShut);
-            m_stream = stream;
+            _stream = stream;
         }
 
         public override Interval<TTime> MapNextSubInterval(Interval<TTime> input)
         {
-            HoloDebug.Assert(input.InitialTime >= m_stream.InitialTime);
-            Duration<TTime> inputDelayDuration = input.InitialTime - m_stream.InitialTime;
+            HoloDebug.Assert(input.InitialTime >= _stream.InitialTime);
+            Duration<TTime> inputDelayDuration = input.InitialTime - _stream.InitialTime;
             // now we want to take that modulo the *discrete* duration
-            inputDelayDuration %= m_stream.DiscreteDuration;
-            Duration<TTime> mappedDuration = Math.Min((long)input.Duration, (long)(m_stream.DiscreteDuration - inputDelayDuration));
-            Interval<TTime> ret = new Interval<TTime>(m_stream.InitialTime + inputDelayDuration, mappedDuration);
+            inputDelayDuration %= _stream.DiscreteDuration;
+            Duration<TTime> mappedDuration = Math.Min((long)input.Duration, (long)(_stream.DiscreteDuration - inputDelayDuration));
+            Interval<TTime> ret = new Interval<TTime>(_stream.InitialTime + inputDelayDuration, mappedDuration);
 
-            Spam.Audio.WriteLine("SimpleLoopingIntervalMapper.MapNextSubInterval: m_stream " + m_stream + ", input " + input + ", ret " + ret);
+            Spam.Audio.WriteLine("SimpleLoopingIntervalMapper.MapNextSubInterval: _stream " + _stream + ", input " + input + ", ret " + ret);
 
             return ret;
         }
@@ -80,13 +80,13 @@ namespace Holofunk.Core
     class LoopingIntervalMapper<TTime, TValue> : IntervalMapper<TTime>
         where TValue : struct
     {
-        DenseSliceStream<TTime, TValue> m_stream;
+        DenseSliceStream<TTime, TValue> _stream;
 
         internal LoopingIntervalMapper(BufferedSliceStream<TTime, TValue> stream)
         {
             // Should only use this mapper on shut streams with a fixed ContinuousDuration.
             Debug.Assert(stream.IsShut);
-            m_stream = stream;
+            _stream = stream;
         }
 
         public override Interval<TTime> MapNextSubInterval(Interval<TTime> input)
@@ -123,8 +123,8 @@ Absolute time   LoopMult	    LoopIndex   InitialTime	    Duration
             */
 
             // First thing we do is, subtract our initial time from the initial time of the input.
-            Duration<TTime> loopRelativeInitialTime = input.InitialTime - m_stream.InitialTime;
-            float continuousDuration = (float)m_stream.ContinuousDuration;
+            Duration<TTime> loopRelativeInitialTime = input.InitialTime - _stream.InitialTime;
+            float continuousDuration = (float)_stream.ContinuousDuration;
 
             // Now, we need to figure out how many multiples of the stream's CONTINUOUS length this is.
             // In other words, we want adjustedInitialTime modulo the real-valued length of this stream.
@@ -138,7 +138,7 @@ Absolute time   LoopMult	    LoopIndex   InitialTime	    Duration
 
             int duration = (int)Math.Ceiling((loopIndex + 1) * continuousDuration - loopRelativeInitialTime);
 
-            return new Interval<TTime>(m_stream.InitialTime + adjustedLoopRelativeInitialTime, duration);
+            return new Interval<TTime>(_stream.InitialTime + adjustedLoopRelativeInitialTime, duration);
         }
     }
 }

@@ -13,14 +13,14 @@ namespace Holofunk.StateMachines
 {
     public class Transition<TEvent>
     {
-        readonly TEvent m_event;
+        readonly TEvent _event;
 
         public Transition(TEvent evt)
         {
-            m_event = evt;
+            _event = evt;
         }
 
-        public TEvent Event { get { return m_event; } }
+        public TEvent Event { get { return _event; } }
 
     }
 
@@ -28,14 +28,14 @@ namespace Holofunk.StateMachines
     /// <remarks>Is labeled with an event, and contains a means to compute a destination state.</remarks>
     public class Transition<TEvent, TModel> : Transition<TEvent>
     {
-        readonly Func<TEvent, TModel, State<TEvent>> m_destinationFunc;
+        readonly Func<TEvent, TModel, State<TEvent>> _destinationFunc;
 
         public Transition(
             TEvent evt,
             Func<TEvent, TModel, State<TEvent>> destinationFunc)
             : base(evt)
         {
-            m_destinationFunc = destinationFunc;
+            _destinationFunc = destinationFunc;
         }
 
         public Transition(
@@ -50,7 +50,7 @@ namespace Holofunk.StateMachines
         /// </summary>
         public State<TEvent> ComputeDestination(TEvent evt, TModel model)
         {
-            return m_destinationFunc(evt, model);
+            return _destinationFunc(evt, model);
         }
     }
 }

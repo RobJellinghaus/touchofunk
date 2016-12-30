@@ -29,30 +29,30 @@ namespace Holofunk.StateMachines
     /// <summary>A running instantiation of a particular StateMachine.</summary>
     public class StateMachineInstance<TEvent> 
     {
-        readonly StateMachine<TEvent> m_machine;
-        State<TEvent> m_machineState;
+        readonly StateMachine<TEvent> _machine;
+        State<TEvent> _machineState;
 
         // The model is dependent on where in the hierarchy we are; it may be transformed on
         // entry or exit.
-        Model m_model;
+        Model _model;
 
         // Reused stacks for finding common parents.
-        readonly List<State<TEvent>> m_startList = new List<State<TEvent>>();
-        readonly List<State<TEvent>> m_endList = new List<State<TEvent>>();
-        readonly List<State<TEvent>> m_pathDownList = new List<State<TEvent>>();
+        readonly List<State<TEvent>> _startList = new List<State<TEvent>>();
+        readonly List<State<TEvent>> _endList = new List<State<TEvent>>();
+        readonly List<State<TEvent>> _pathDownList = new List<State<TEvent>>();
 
-        Moment m_lastTransitionMoment;
+        Moment _lastTransitionMoment;
 
         public StateMachineInstance(TEvent initial, StateMachine<TEvent> machine, Model initialModel)
         {
-            m_machine = machine;
-            m_machineState = machine.RootState;
-            m_model = initialModel;
+            _machine = machine;
+            _machineState = machine.RootState;
+            _model = initialModel;
 
             MoveTo(initial, machine.InitialState);
         }
 
-        public Moment LastTransitionMoment { get { return m_lastTransitionMoment; } set { m_lastTransitionMoment = value; } }
+        public Moment LastTransitionMoment { get { return _lastTransitionMoment; } set { _lastTransitionMoment = value; } }
 
         // We are in state start.  We need to get to state end.
         // Do so by performing all the exit actions necessary to get up to the common parent of start and end,
@@ -60,25 +60,25 @@ namespace Holofunk.StateMachines
         void MoveTo(TEvent evt, State<TEvent> end)
         {
             // if already there, do nothing
-            if (m_machineState == end) {
+            if (_machineState == end) {
                 return;
             }
 
             // Get the common parent of start and end.
             // This will be null if they have no common parent.
-            State<TEvent> commonParent = GetCommonParent(m_machineState, end, m_pathDownList);
+            State<TEvent> commonParent = GetCommonParent(_machineState, end, _pathDownList);
 
-            ExitUpTo(evt, m_machineState, commonParent);
-            EnterDownTo(evt, m_pathDownList);
+            ExitUpTo(evt, _machineState, commonParent);
+            EnterDownTo(evt, _pathDownList);
 
-            m_machineState = end;
+            _machineState = end;
         }
 
 
         void ExitUpTo(TEvent evt, State<TEvent> state, State<TEvent> commonParent)
         {
             while (state != commonParent) {
-                m_model = state.Exit(evt, m_model);
+                _model = state.Exit(evt, _model);
                 state = state.Parent;
             }
         }
@@ -86,7 +86,7 @@ namespace Holofunk.StateMachines
         void EnterDownTo(TEvent evt, List<State<TEvent>> pathToEnd)
         {
             for (int i = 0; i < pathToEnd.Count; i++) {
-                m_model = pathToEnd[i].Enter(evt, m_model);
+                _model = pathToEnd[i].Enter(evt, _model);
             }
         }
 
@@ -104,35 +104,35 @@ namespace Holofunk.StateMachines
 
             // make a list of all states to root.
             // (actually, the lists wind up being ordered from root to the leaf state.)
-            ListToRoot(start, m_startList);
-            ListToRoot(end, m_endList);
+            ListToRoot(start, _startList);
+            ListToRoot(end, _endList);
 
             // now the common parent is the end of the longest common prefix.
             pathDownToEnd.Clear();
-            for (int i = 0; i < Math.Min(m_startList.Count, m_endList.Count); i++) {
-                if (m_startList[i] != m_endList[i]) {
+            for (int i = 0; i < Math.Min(_startList.Count, _endList.Count); i++) {
+                if (_startList[i] != _endList[i]) {
                     if (i == 0) {
-                        pathDownToEnd.AddFrom(m_endList, 0, m_endList.Count);
+                        pathDownToEnd.AddFrom(_endList, 0, _endList.Count);
                         return null;
                     }
                     else {
-                        pathDownToEnd.AddFrom(m_endList, i - 1, m_endList.Count - i + 1);
-                        return m_startList[i - 1];
+                        pathDownToEnd.AddFrom(_endList, i - 1, _endList.Count - i + 1);
+                        return _startList[i - 1];
                     }
                 }
             }
 
             // If we got to here, then one list is a prefix of the other.
 
-            if (m_startList.Count > m_endList.Count) {
+            if (_startList.Count > _endList.Count) {
                 // The start list is longer, so end contains (hierarchically speaking) start.
                 // So there IS no pathDownToEnd, and the end of endList is the common parent.
-                return m_endList[m_endList.Count - 1];
+                return _endList[_endList.Count - 1];
             }
             else {
-                // m_endList is longer.
-                pathDownToEnd.AddFrom(m_endList, m_startList.Count, m_endList.Count - m_startList.Count);
-                return m_startList[m_startList.Count - 1];
+                // _endList is longer.
+                pathDownToEnd.AddFrom(_endList, _startList.Count, _endList.Count - _startList.Count);
+                return _startList[_startList.Count - 1];
             }
         }
 
@@ -164,17 +164,17 @@ namespace Holofunk.StateMachines
         public void OnNext(TEvent value, Moment now)
         {
             // Find transition if any.
-            var destination = m_machine.TransitionFrom(m_machineState, value, m_model);
+            var destination = _machine.TransitionFrom(_machineState, value, _model);
             if (destination != null) {
                 MoveTo(value, destination);
             }
 
-            m_lastTransitionMoment = now;
+            _lastTransitionMoment = now;
         }
 
         public void GameUpdate(Moment now)
         {
-            m_model.GameUpdate(now);
+            _model.GameUpdate(now);
         }
     }
 }

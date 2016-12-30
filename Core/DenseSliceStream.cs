@@ -22,12 +22,12 @@ namespace Holofunk.Core
         /// <summary>
         /// The discrete duration of this stream; always exactly equal to the sum of the durations of all contained slices.
         /// </summary>
-        protected Duration<TTime> m_discreteDuration;
+        protected Duration<TTime> _discreteDuration;
 
         /// <summary>
         /// The mapper that converts absolute time into relative time for this stream.
         /// </summary>
-        IntervalMapper<TTime> m_intervalMapper;
+        IntervalMapper<TTime> _intervalMapper;
 
         protected DenseSliceStream(Time<TTime> initialTime, int sliverSize)
             : base(initialTime, sliverSize)
@@ -37,14 +37,14 @@ namespace Holofunk.Core
         /// <summary>
         /// The discrete duration of this stream; always exactly equal to the number of timepoints appended.
         /// </summary>
-        public Duration<TTime> DiscreteDuration { get { return m_discreteDuration; } }
+        public Duration<TTime> DiscreteDuration { get { return _discreteDuration; } }
 
         public Interval<TTime> DiscreteInterval { get { return new Interval<TTime>(InitialTime, DiscreteDuration); } }
 
         IntervalMapper<TTime> IntervalMapper
         {
-            get { return m_intervalMapper; }
-            set { m_intervalMapper = value; }
+            get { return _intervalMapper; }
+            set { _intervalMapper = value; }
         }
 
         /// <summary>
@@ -72,7 +72,6 @@ namespace Holofunk.Core
         /// If the interval IsEmpty, return an empty slice.
         /// </remarks>
         public abstract Slice<TTime, TValue> GetNextSliceAt(Interval<TTime> sourceInterval);
-
 
         /// <summary>
         /// Append contiguous data; this must not be shut yet.

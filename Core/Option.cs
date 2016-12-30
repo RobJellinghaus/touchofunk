@@ -7,8 +7,8 @@ namespace Holofunk.Core
 {
     public struct Option<T>
     {
-        readonly bool m_hasValue;
-        readonly T m_value;
+        readonly bool _hasValue;
+        readonly T _value;
 
         public static Option<T> None
         {
@@ -17,8 +17,8 @@ namespace Holofunk.Core
 
         public Option(T value)
         {
-            m_hasValue = true;
-            m_value = value;
+            _hasValue = true;
+            _value = value;
         }
 
         public static implicit operator Option<T>(T value)
@@ -28,12 +28,12 @@ namespace Holofunk.Core
 
         public T Value
         {
-            get { HoloDebug.Assert(m_hasValue); return m_value; }
+            get { HoloDebug.Assert(_hasValue); return _value; }
         }
 
         public bool HasValue
         {
-            get { return m_hasValue; }
+            get { return _hasValue; }
         }
     }
 }

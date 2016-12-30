@@ -13,16 +13,16 @@ namespace Holofunk.Core
         /// <summary>
         /// Duration in seconds.
         /// </summary>
-        readonly double m_duration;
+        readonly double _duration;
 
         public ContinuousDuration(double duration)
         {
-            m_duration = duration;
+            _duration = duration;
         }
 
         public static explicit operator double(ContinuousDuration duration)
         {
-            return duration.m_duration;
+            return duration._duration;
         }
 
         public static explicit operator ContinuousDuration(double value)
