@@ -1,4 +1,9 @@
-﻿using System;
+﻿/////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2011-2017 by Rob Jellinghaus.                             //
+// Licensed under MIT license, http://github.com/RobJellinghaus/Touchofunk //
+/////////////////////////////////////////////////////////////////////////////
+
+using System;
 using System.Threading.Tasks;
 using Windows.Media;
 using Windows.Media.Audio;

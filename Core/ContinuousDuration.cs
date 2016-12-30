@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+﻿/////////////////////////////////////////////////////////////////////////////
 // Copyright (c) 2011-2017 by Rob Jellinghaus.                             //
 // Licensed under MIT license, http://github.com/RobJellinghaus/Touchofunk //
 /////////////////////////////////////////////////////////////////////////////
@@ -6,28 +6,28 @@
 namespace Holofunk.Core
 {
     /// <summary>
-    /// A continous time measured in floating point seconds.
+    /// A continous distance between two Times.
     /// </summary>                                                                                           
-    public struct ContinuousTime
+    public struct ContinuousDuration
     {
         /// <summary>
         /// Duration in seconds.
         /// </summary>
-        readonly double m_timeInSeconds;
+        readonly double m_duration;
 
-        public ContinuousTime(double timeInSeconds)
+        public ContinuousDuration(double duration)
         {
-            m_timeInSeconds = timeInSeconds;
+            m_duration = duration;
         }
 
-        public static explicit operator double(ContinuousTime time)
+        public static explicit operator double(ContinuousDuration duration)
         {
-            return time.m_timeInSeconds;
+            return duration.m_duration;
         }
 
-        public static explicit operator ContinuousTime(double value)
+        public static explicit operator ContinuousDuration(double value)
         {
-            return new ContinuousTime(value);
+            return new ContinuousDuration(value);
         }
     }
 }

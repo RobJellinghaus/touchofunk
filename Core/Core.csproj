@@ -112,6 +112,7 @@
     <Compile Include="BufferAllocator.cs" />
     <Compile Include="BufferedSliceStream.cs" />
     <Compile Include="Clock.cs" />
+    <Compile Include="ContinuousDuration.cs" />
     <Compile Include="ContinuousTime.cs" />
     <Compile Include="DenseSliceStream.cs" />
     <Compile Include="DiscreteTime.cs" />
