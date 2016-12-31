@@ -200,7 +200,7 @@
       <Project>{8763bdb0-4143-4b71-bdee-d295bb66b3e9}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Loopies\World.csproj">
+    <ProjectReference Include="..\World\World.csproj">
       <Project>{b9e69207-57b2-484d-92a9-950b224b52ae}</Project>
       <Name>World</Name>
     </ProjectReference>

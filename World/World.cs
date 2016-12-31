@@ -18,14 +18,31 @@ namespace Holofunk.World
     public class World
     {
         Clock _clock;
-        internal BufferAllocator<float> _audioAllocator;
+        BufferAllocator<float> _audioAllocator;
+        AudioGraphImpl _audioGraph;
 
-        public World(BufferAllocator<float> audioAllocator)
+        List<Player> _players = new List<Player>();
+        List<Loopie> _loopies = new List<Loopie>();
+
+        public World(AudioGraphImpl audioGraphImpl)
         {
-            _audioAllocator = audioAllocator;
-
+            // Each buffer is one second of audio at two stereo channels x 4 bytes per 32-bit-float sample x sample rate.
+            // Allocate 128 of them, arbitrarily.
+            _audioAllocator = new BufferAllocator<float>(2 * 4 * Constants.SampleRateHz, 128, sizeof(float));
+            _audioGraph = audioGraphImpl;
         }
 
         public Clock Clock { get { return _clock; } }
+
+        internal BufferAllocator<float> AudioAllocator { get { return _audioAllocator; } }
+
+        internal AudioGraphImpl AudioGraph { get { return _audioGraph; } }
+
+        public Player CreatePlayer(int initialAudioChannel)
+        {
+            Player newPlayer = new Player(this, initialAudioChannel);
+            _players.Add(newPlayer);
+            return newPlayer;
+        }
     }
 }

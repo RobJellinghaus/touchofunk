@@ -4,6 +4,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Media;
 using Windows.Media.Audio;
@@ -13,31 +14,44 @@ using Windows.Media.Render;
 
 namespace Holofunk.World
 {
-    internal class AudioGraphImpl : IHoloAudioGraph
+    /// <summary>
+    /// Verbatim from https://msdn.microsoft.com/en-us/windows/uwp/audio-video-camera/audio-graphs
+    /// </summary>
+    [ComImport]
+    [Guid("5B0D3235-4DBA-4D44-865E-8F1D0E4FD04D")]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    unsafe interface IMemoryBufferByteAccess
+    {
+        void GetBuffer(out byte* buffer, out uint capacity);
+    }
+
+    public class AudioGraphImpl : IHoloAudioGraph
     {
         /// <summary>
         /// The audio graph itself.
         /// </summary>
-        private AudioGraph _audioGraph;
+        AudioGraph _audioGraph;
 
         /// <summary>
         /// The default audio output device (the only one currently supported).
         /// </summary>
-        private AudioDeviceOutputNode _deviceOutputNode;
+        AudioDeviceOutputNode _deviceOutputNode;
 
         /// <summary>
         /// The default audio input device (the only one currently supported).
         /// </summary>
-        private AudioDeviceInputNode _deviceInputNode;
+        AudioDeviceInputNode _deviceInputNode;
 
         /// <summary>
         /// The submix node which listens to and copies out incoming audio data.
         /// </summary>
-        private AudioSubmixNode _inputCaptureSubmixNode;
+        AudioFrameOutputNode _inputCaptureNode;
 
         public AudioGraphImpl()
         {
         }
+
+        internal AudioFrameOutputNode InputCaptureNode { get { return _inputCaptureNode; } }
 
         public async Task InitializeAsync()
         {
@@ -63,7 +77,7 @@ namespace Holofunk.World
 
             _deviceOutputNode = deviceOutputNodeResult.DeviceOutputNode;
 
-            _inputCaptureSubmixNode = _audioGraph.CreateSubmixNode();                                                            // Create a device input node using the default audio input device
+            _inputCaptureNode = _audioGraph.CreateFrameOutputNode();                                                            // Create a device input node using the default audio input device
 
             CreateAudioDeviceInputNodeResult deviceInputNodeResult = await _audioGraph.CreateDeviceInputNodeAsync(MediaCategory.Other);
 
@@ -72,7 +86,8 @@ namespace Holofunk.World
 
             _deviceInputNode = deviceInputNodeResult.DeviceInputNode;
 
-            _deviceInputNode.AddOutgoingConnection(_inputCaptureSubmixNode);
+            _deviceInputNode.AddOutgoingConnection(_inputCaptureNode);
+            _deviceInputNode.AddOutgoingConnection(_deviceOutputNode);
 
             /*
             echoEffect = new EchoEffectDefinition(_graph);

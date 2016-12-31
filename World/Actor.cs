@@ -33,9 +33,16 @@ namespace Holofunk.World
         readonly FloatAverager _leftLevelAverager;
         readonly FloatAverager _rightLevelAverager;
 
-        public Actor(World world)
+        public Actor(World world, DenseSampleFloatStream audioStream)
         {
+            DebugUtil.Requires(world != null);
+            DebugUtil.Requires(audioStream != null);
 
+            _world = world;
+            _audioStream = audioStream;
+
+            _leftLevelAverager = new FloatAverager((int)Constants.VolumeAveragerDuration);
+            _rightLevelAverager = new FloatAverager((int)Constants.VolumeAveragerDuration);
         }
     }
 }
